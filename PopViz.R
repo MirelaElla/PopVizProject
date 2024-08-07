@@ -1,12 +1,31 @@
+# List of packages to install
+packages <- c("shiny", "reticulate", "dplyr", "ggplot2", "httr", "jsonlite")
+
+# Function to install the package if not already installed
+install_if_missing <- function(package) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package)
+  }
+}
+
+# Apply the function to each package in the list
+for (pkg in packages) {
+  install_if_missing(pkg)
+}
+
 library(shiny)
+library(reticulate)
+library(dplyr)
 library(ggplot2)
+library(httr)
+library(jsonlite)
+py_install(c("requests", "pandas", "matplotlib", "beautifulsoup4", "numpy"))
 
-# Source the R script with data processing functions
-source("scraping.R") # Replace with the actual name of your script
+# Source the Python script
+source_python("pythonscripts/pythonscript.py")
 
-# Define UI
 ui <- fluidPage(
-  titlePanel("World Bank Data Visualization"),
+  titlePanel("Country Demographics Plot"),
   sidebarLayout(
     sidebarPanel(
       textInput("countryCode", "Enter Country Code", value = "CH"),
@@ -18,21 +37,18 @@ ui <- fluidPage(
   )
 )
 
-# Define Server Logic
 server <- function(input, output) {
-  observeEvent(input$plotButton, {
-    req(input$countryCode) # Ensure there is input before proceeding
+  output$demographicsPlot <- renderPlot({
+    req(input$plotButton)  # Ensure plot is generated only after button click
     
-    # Call function from the sourced script with user input
-    output$demographicsPlot <- renderPlot({
-      plot_death_to_population_grow_ratio(input$countryCode)
+    # Call Python function with user input
+    isolate({
+      country_code <- input$countryCode
+      if (nchar(country_code) > 0) {
+        plot_death_to_population_grow_ratio(country_code)
+      }
     })
   })
 }
 
-# Run the App
 shinyApp(ui = ui, server = server)
-
-
-
-

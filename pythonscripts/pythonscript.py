@@ -28,7 +28,7 @@ def scrape_worldbank_data(country, ind, start_year, end_year ):
 
 def plot_death_to_population_grow_ratio(country) :
 # List of countries to plot
-#country = "CH" #, "FR", "DE", "IT"  # Switzerland, France, Germany, Italy
+# country is set in the R shiny app script
   mortality = "SP.DYN.CDRT.IN"
   newborns = "SP.DYN.CBRT.IN"
   totpop = "SP.POP.TOTL"
